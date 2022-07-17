@@ -64,7 +64,8 @@ func solve8QueensHelper(board: inout Board, row: Int, col: Int, uniqueArrnagemen
     
     // choice&search
     // note:
-    // possible positions for "Q" to take are at (x, y) = (x+i, x+j)
+    // possible positions for "Q" to take are at 
+    // (x, y) = (x+i, y+j), (x+i, y-j), (x-i, y+j), (x-i, y-j)
     // when (x,y) is the coordinate where latest Q was put
     // with the following restriction ----> i>=1 && j>=i+1
     
