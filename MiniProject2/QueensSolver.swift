@@ -40,7 +40,6 @@ func solve8Queens(board: inout Board) {
 func solve8QueensForOneSolution(board: inout Board, initialRow: Int, initialCol: Int) {
     var uniqueArrangementSet = Set<String>()
     
-    // shift the first Q's place from left upper to lower right position
     board.place(row: initialRow, col: initialCol)
     solve8QueensForOneSolutionHelper(board: &board, row: initialRow, col: initialCol, uniqueArrnagement: &uniqueArrangementSet)
     board.remove(row: initialRow, col: initialCol)
