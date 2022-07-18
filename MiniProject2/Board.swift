@@ -44,18 +44,6 @@ struct Board: CustomStringConvertible {
 		}
 		return true
 	}
-	
-    func getNumberOfQueen() -> Int {
-        var res = 0
-        for i in 0 ..< self.size {
-            for j in 0 ..< self.size {
-                if self.board[i][j] == "Q" {
-                    res += 1
-                }
-            }
-        }
-        return res
-    }
     
 	mutating func place(row: Int, col: Int) {
 		if isOnBoard(row: row, col: col) {

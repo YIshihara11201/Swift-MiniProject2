@@ -5,7 +5,6 @@
 //  Created by Derrick Park on 2019-03-13.
 //  Copyright © 2019 Derrick Park. All rights reserved.
 //
-
 import Foundation
 
 /// Write a function solveQueens that accepts a Board as a parameter
@@ -15,46 +14,38 @@ import Foundation
 /// - You are allowed to change the function header (args or return type)
 /// - Your total recursive calls should not exceed 120 times.
 
+// note: you can't put multiple Q's in one row.
+
 var count = 0
+var countForFirstSolution = 0
 var validBoardNumber = 0
 
 func solve8Queens(board: inout Board) {
     var uniqueArrangementSet = Set<String>()
-    
-    // shift the first Q's place from upper left to lower right position
-    for i in 0..<board.size {
-        for j in 0..<board.size {
-            board.place(row: i, col: j)
-            solve8QueensHelper(board: &board, row: i, col: j, uniqueArrnagement: &uniqueArrangementSet)
-            board.remove(row: i, col: j)
-        }
+    var availableColumn = [Int]()
+    for col in 0..<board.size {
+        availableColumn.append(col)
     }
     
-    print("Number of recursive calls: \(count)")
+    solve8QueensHelper(board: &board, row: 0, uniqueArrnagement: &uniqueArrangementSet)
+    
+    print("recursive calls: \(count) times", terminator: "\n\n")
+    print("recursive calls for first solution: \(countForFirstSolution)", terminator: "\n\n")
     print("Possible arrangements: \(validBoardNumber)", terminator: "\n\n")
     count = 0
+    countForFirstSolution = 0
     validBoardNumber = 0
-    
 }
 
-func solve8QueensForOneSolution(board: inout Board, initialRow: Int, initialCol: Int) {
-    var uniqueArrangementSet = Set<String>()
-    
-    board.place(row: initialRow, col: initialCol)
-    solve8QueensForOneSolutionHelper(board: &board, row: initialRow, col: initialCol, uniqueArrnagement: &uniqueArrangementSet)
-    board.remove(row: initialRow, col: initialCol)
-    
-    print("Number of recursive calls: \(count)", terminator: "\n\n")
-    count = 0
-    
-}
-
-func solve8QueensHelper(board: inout Board, row: Int, col: Int, uniqueArrnagement: inout Set<String>) {
+func solve8QueensHelper(board: inout Board, row: Int, uniqueArrnagement: inout Set<String>) {
     count += 1
     
     // base case
-    if board.getNumberOfQueen() == board.size {
+    if row == board.size {
         if !uniqueArrnagement.contains(board.description) {
+            if validBoardNumber == 0 {
+                countForFirstSolution = count
+            }
             validBoardNumber += 1
             uniqueArrnagement.insert(board.description)
             print(board)
@@ -62,106 +53,12 @@ func solve8QueensHelper(board: inout Board, row: Int, col: Int, uniqueArrnagemen
         return
     }
     
-    // choice&search
-    // note:
-    // possible positions for "Q" to take are at 
-    // (x, y) = (x+i, y+j), (x+i, y-j), (x-i, y+j), (x-i, y-j)
-    // when (x,y) is the coordinate where latest Q was put
-    // with the following restriction ----> i>=1 && j>=i+1
-    
-    //upper right
-    for i in stride(from: 1, through: row, by: 1) {
-        for j in stride(from: i+1, to: board.size-col, by: 1) {
-            if board.isSafe(row: row-i, col: col+j) {
-                board.place(row: row-i, col: col+j)
-                solve8QueensHelper(board: &board, row: row-i, col: col+j, uniqueArrnagement: &uniqueArrnagement)
-                board.remove(row: row-i, col: col+j)
-            }
-        }
-    }
-    
-    //upper left
-    for i in stride(from: 1, through: row, by: 1) {
-        for j in stride(from: i+1, through: col, by: 1) {
-            if board.isSafe(row: row-i, col: col-j) {
-                board.place(row: row-i, col: col-j)
-                solve8QueensHelper(board: &board, row: row-i, col: col-j, uniqueArrnagement: &uniqueArrnagement)
-                board.remove(row: row-i, col: col-j)
-            }
-        }
-    }
-    
-    //lower right
-    for i in stride(from: 1, to: board.size-row, by: 1) {
-        for j in stride(from: i+1, to: board.size-col, by: 1) {
-            if board.isSafe(row: row+i, col: col+j) {
-                board.place(row: row+i, col: col+j)
-                solve8QueensHelper(board: &board, row: row+i, col: col+j, uniqueArrnagement: &uniqueArrnagement)
-                board.remove(row: row+i, col: col+j)
-            }
-        }
-    }
-    
-    //lower left
-    for i in stride(from: 1, to: board.size-row, by: 1) {
-        for j in stride(from: i+1, through: col, by: 1) {
-            if board.isSafe(row: row+i, col: col-j) {
-                board.place(row: row+i, col: col-j)
-                solve8QueensHelper(board: &board, row: row+i, col: col-j, uniqueArrnagement: &uniqueArrnagement)
-                board.remove(row: row+i, col: col-j)
-            }
-        }
-    }
-}
-
-func solve8QueensForOneSolutionHelper(board: inout Board, row: Int, col: Int, uniqueArrnagement: inout Set<String>) {
-    count += 1
-    
-    if board.getNumberOfQueen() == board.size {
-        if !uniqueArrnagement.contains(board.description) {
-            validBoardNumber += 1
-            uniqueArrnagement.insert(board.description)
-            print(board)
-        }
-        return
-    }
-    
-    //upper left
-    if uniqueArrnagement.count == 0 {
-        for i in stride(from: 1, through: row, by: 1) {
-            for j in stride(from: i+1, through: col, by: 1) {
-                if board.isSafe(row: row-i, col: col-j) {
-                    board.place(row: row-i, col: col-j)
-                    solve8QueensForOneSolutionHelper(board: &board, row: row-i, col: col-j, uniqueArrnagement: &uniqueArrnagement)
-                    board.remove(row: row-i, col: col-j)
-                }
-            }
-        }
-    }
-    
-    //lower right
-    if uniqueArrnagement.count == 0 {
-        for i in stride(from: 1, to: board.size-row, by: 1) {
-            for j in stride(from: i+1, to: board.size-col, by: 1) {
-                if board.isSafe(row: row+i, col: col+j) {
-                    board.place(row: row+i, col: col+j)
-                    solve8QueensForOneSolutionHelper(board: &board, row: row+i, col: col+j, uniqueArrnagement: &uniqueArrnagement)
-                    board.remove(row: row+i, col: col+j)
-                }
-            }
-        }
-    }
-    
-    //lower left
-    if uniqueArrnagement.count == 0 {
-        for i in stride(from: 1, to: board.size-row, by: 1) {
-            for j in stride(from: i+1, through: col, by: 1) {
-                if board.isSafe(row: row+i, col: col-j) {
-                    board.place(row: row+i, col: col-j)
-                    solve8QueensForOneSolutionHelper(board: &board, row: row+i, col: col-j, uniqueArrnagement: &uniqueArrnagement)
-                    board.remove(row: row+i, col: col-j)
-                }
-            }
+    // choice & search
+    for col in 0 ..< board.size {
+        if board.isSafe(row: row, col: col) {
+            board.place(row: row, col: col)
+            solve8QueensHelper(board: &board, row: row+1, uniqueArrnagement: &uniqueArrnagement)
+            board.remove(row: row, col: col)
         }
     }
 }
